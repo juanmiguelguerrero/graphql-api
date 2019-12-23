@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const path = require("path")
 
-router.get('/', async (req, res) => {
-	res.sendFile(path.resolve('./views/index.html'))
-})
+const projects = require('./projectsCtrl.js')
+
+router.post('/projects', projects.createProject)
+router.get('/projects', projects.listProjects)
 
 module.exports = router

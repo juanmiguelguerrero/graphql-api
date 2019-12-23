@@ -2,12 +2,14 @@ const express = require('express')
 const server = express()
 const cors = require('cors')
 const morgan = require('morgan')
-const port = process.env.PORT || 8080
+const mongoose = require('mongoose')
+
+const config = require('./config.js')
 
 const { ApolloServer, gql } = require('apollo-server-express')
 
-const schema = require('./schema/generateSchema.js')
-const resolvers = require('./resolvers/generateResolvers.js')
+const schema = require('./lib/schema.js')
+const resolvers = require('./lib/resolvers.js')
 const typeDefs = gql(schema)
 
 const apollo = new ApolloServer({ typeDefs, resolvers })
@@ -18,12 +20,14 @@ server.use(express.urlencoded({extended: true}))
 server.use(morgan('tiny'))
 server.use(cors())
 
+// Run Apollo Server as Middleware
 apollo.applyMiddleware({
 	app: server,
 	path: '/graphql',
 });
 
-server.use("/", api)
+// Run API
+server.use("/api", api)
 
 // catch 404 and forward to error handler
 server.use(function(req, res, next) {
@@ -40,7 +44,15 @@ server.use(function(error, req, res, next) {
   })
 });
 
-// Deploy server
-server.listen(port, () => {
-	console.log(`Server running on port: ${port} ${apollo.graphqlPath}`)
-})
+mongoose.connect(config.db, {useNewUrlParser: true, useUnifiedTopology: true})
+	.then(()=>{
+		console.log('Conexión a la base de datos realizada...')
+
+		// Deploy server
+		server.listen(config.port, () => {
+			console.log(`Graphql Server running on: http://localhost:${config.port}${apollo.graphqlPath}`)
+			console.log(`API running on: http://localhost:${config.port}/api`)
+		})
+	})
+	.catch(error => console.log(error))
+

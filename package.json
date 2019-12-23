@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -13,8 +13,13 @@
     "apollo-server-express": "^2.9.14",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "mongoose": "^5.8.2",
     "morgan": "^1.9.1",
+    "nanoid-generate": "^1.0.0",
     "node-fetch": "^2.6.0",
     "pluralize": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
