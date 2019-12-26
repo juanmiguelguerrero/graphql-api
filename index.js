@@ -44,7 +44,7 @@ server.use(function(error, req, res, next) {
   })
 });
 
-mongoose.connect(config.db, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(config.db, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	.then(()=>{
 		console.log('Conexión a la base de datos realizada...')
 
