@@ -12,12 +12,14 @@ const schema = require('./lib/schema.js')
 const resolvers = require('./lib/resolvers.js')
 const typeDefs = gql(schema)
 
-const apollo = new ApolloServer({ typeDefs, resolvers })
+const model = require('./model.js')
+
+const apollo = new ApolloServer({ typeDefs, resolvers, context: (req) => model })
 const api = require('./api')
 
 server.use(express.json())
 server.use(express.urlencoded({extended: true}))
-server.use(morgan('tiny'))
+// server.use(morgan('tiny'))
 server.use(cors())
 
 // Run Apollo Server as Middleware
