@@ -4,6 +4,12 @@ const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz'
 const { Project } = require('../models/projects.js')
 const { Collection } = require('../models/collections.js')
 
+// Endpoints
+// ====================
+// Crear (name, IdProject, model)
+// Update (Id, model, name)
+// Lista (IdProject)
+// Borrar (Id)
 
 async function createCollection(req, res) {
 	
@@ -15,18 +21,21 @@ async function createCollection(req, res) {
 		let newCollection = {
 			id: generate(alphabet, 10),
 			projectId: data.projectId,
-			name: data.name
+			name: data.name,
+			model: data.model || []
 		}
 
-		let project = await Project.findOne({id: data.projectId})
-		project.collections.push(newCollection)
-		await project.update()
-		await Collection.create(newCollection)
+		console.log(newCollection)
 
-		return res.status(200).json(project)
+		// let project = await Project.findOne({id: data.projectId})
+		// project.collections.push(newCollection)
+		// await project.update()
+		let collection = await Collection.create(newCollection)
+
+		return res.status(200).json(collection)
 	}
 	catch(error) {
-		return res.status(500).send({ error })
+		return res.status(500).send({ error: error.message })
 	}
 }
 
@@ -42,17 +51,17 @@ async function updateCollection(req, res) {
 
 		let collection = await Collection.findOneAndUpdate({ id: collectionId }, updatedCollection, { new: true })
 
-		let project = await Project.findOne({ id: collection.projectId })
+		// let project = await Project.findOne({ id: collection.projectId })
 
-		project.collections.forEach((item, index) => {
-			if (item.id == collection.id) { 
-				project.collections[index].name = collection.name
-				project.collections[index].updated = collection.updated
-				project.collections[index].model = collection.model
-			}
-		})
+		// project.collections.forEach((item, index) => {
+		// 	if (item.id == collection.id) { 
+		// 		project.collections[index].name = collection.name
+		// 		project.collections[index].updated = collection.updated
+		// 		project.collections[index].model = collection.model
+		// 	}
+		// })
 		
-		await project.save()
+		// await project.save()
 
 		return res.status(200).json(collection)
 	}
@@ -67,15 +76,15 @@ async function deleteCollection(req, res) {
 
 	try {
 		let response = await Collection.findOne({ id: collectionId })
-		let project = await Project.findOne({ id: response.projectId })
+		// let project = await Project.findOne({ id: response.projectId })
 
-		console.log(project.collections)
+		// console.log(project.collections)
 
-		project.collections.forEach((item, index) => {
-			if (item.id == collectionId) delete project.collections[index]
-		})
+		// project.collections.forEach((item, index) => {
+		// 	if (item.id == collectionId) delete project.collections[index]
+		// })
 		
-		await project.save()	
+		// await project.save()	
 
 		response = await Collection.deleteOne({ id: collectionId })
 
@@ -91,8 +100,8 @@ async function listCollections(req, res) {
 	let projectId = req.params.projectId
 
 	try {
-		let response = await Project.findOne({id: projectId })
-		return res.status(200).json(response.collections)
+		let response = await Collection.find({projectId: projectId })
+		return res.status(200).json(response)
 	}
 	catch(error) {
 		return res.status(500).send({ error })
